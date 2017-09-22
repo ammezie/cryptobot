@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use BotMan\BotMan\BotMan;
-use Illuminate\Http\pay$payoad;
+use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 
 class BotManController extends Controller
@@ -52,7 +52,7 @@ class BotManController extends Controller
         $data = "Here' s the comparison of the top $limit crytocurrencies: \n";
 
         foreach ($results as $result) {
-            $data .= "$result->name | $result->symbol | $$result->price_usd | $$result->market_cap_usd" . "\n";
+            $data .= "> $result->name | $result->symbol | $$result->price_usd | $$result->market_cap_usd" . "\n";
         }
 
         return $data;
