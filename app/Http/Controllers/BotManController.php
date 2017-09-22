@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use BotMan\BotMan\BotMan;
 use Illuminate\Http\Request;
-use App\Conversations\ExampleConversation;
+use GuzzleHttp\Client;
 
 class BotManController extends Controller
 {
@@ -14,6 +14,16 @@ class BotManController extends Controller
     public function handle()
     {
         $botman = app('botman');
+
+        $botman->hears('crytocompare {limit}', function ($bot, $limit) {
+            $bot->types();
+            $result = $this->compareCrytocurrencies($limit);
+            $bot->reply($result);
+        });
+
+        $botman->fallback(function ($bot) {
+            $bot->reply("Sorry, I did not understand these commands. Try: 'crytocompare 5'");
+        });
 
         $botman->listen();
     }
@@ -26,12 +36,19 @@ class BotManController extends Controller
         return view('tinker');
     }
 
-    /**
-     * Loaded through routes/botman.php
-     * @param  BotMan $bot
-     */
-    public function startConversation(BotMan $bot)
+    protected function compareCrytocurrencies($limit)
     {
-        $bot->startConversation(new ExampleConversation());
+        $client = new Client(['base_uri' => 'https://api.coinmarketcap.com/v1/ticker/']);
+
+        $response = $client->get('?limit=' . $limit);
+        $results = json_decode($response->getBody()->getContents());
+
+        $data = "Here' s the comparison of top $limit crytocurrencies: \n";
+
+        foreach ($results as $result) {
+            $data .= "$result->name | $result->symbol | $$result->price_usd | $$result->market_cap_usd" . "\n";
+        }
+
+        return $data;
     }
 }
