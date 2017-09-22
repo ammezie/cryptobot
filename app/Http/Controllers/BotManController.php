@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use BotMan\BotMan\BotMan;
-use Illuminate\Http\Request;
+use Illuminate\Http\pay$payoad;
 use GuzzleHttp\Client;
 
 class BotManController extends Controller
@@ -11,12 +11,18 @@ class BotManController extends Controller
     /**
      * Place your BotMan logic here.
      */
-    public function handle()
+    public function handle(Request $request)
     {
+        // Slack URL verification
+        $payload = $request->json();
+
+        if ($payload->get('type') === 'url_verification') {
+            return $payload->get('challenge');
+        }
+
         $botman = app('botman');
 
         $botman->hears('crytocompare {limit}', function ($bot, $limit) {
-            $bot->types();
             $result = $this->compareCrytocurrencies($limit);
             $bot->reply($result);
         });
