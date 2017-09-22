@@ -9,7 +9,10 @@ use GuzzleHttp\Client;
 class BotManController extends Controller
 {
     /**
-     * Place your BotMan logic here.
+     * Place your BotMan logic here
+     *
+     * @param Request $request
+     * @return void
      */
     public function handle(Request $request)
     {
@@ -27,6 +30,7 @@ class BotManController extends Controller
             $bot->reply($result);
         });
 
+        // Fallback in case of wrong command
         $botman->fallback(function ($bot) {
             $bot->reply("Sorry, I did not understand these commands. Try: 'crytocompare 5'");
         });
@@ -42,6 +46,12 @@ class BotManController extends Controller
         return view('tinker');
     }
 
+    /**
+     * Get comparison of crytocurrencies from an API
+     *
+     * @param integer $limit
+     * @return string
+     */
     protected function compareCrytocurrencies($limit)
     {
         $client = new Client(['base_uri' => 'https://api.coinmarketcap.com/v1/ticker/']);
@@ -52,7 +62,7 @@ class BotManController extends Controller
         $data = "Here' s the comparison of the top $limit crytocurrencies: \n";
 
         foreach ($results as $result) {
-            $data .= "> $result->name | $result->symbol | $$result->price_usd | $$result->market_cap_usd" . "\n";
+            $data .= '> ' . $result->name . ' | ' . $result->symbol . ' | ' . '$' . $result->price_usd . ' | ' . '$' . $result->market_cap_usd . "\n";
         }
 
         return $data;
