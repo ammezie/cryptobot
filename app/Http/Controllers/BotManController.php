@@ -43,7 +43,7 @@ class BotManController extends Controller
         $response = $client->get('?limit=' . $limit);
         $results = json_decode($response->getBody()->getContents());
 
-        $data = "Here' s the comparison of top $limit crytocurrencies: \n";
+        $data = "Here' s the comparison of the top $limit crytocurrencies: \n";
 
         foreach ($results as $result) {
             $data .= "$result->name | $result->symbol | $$result->price_usd | $$result->market_cap_usd" . "\n";
