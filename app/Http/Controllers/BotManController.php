@@ -16,13 +16,6 @@ class BotManController extends Controller
      */
     public function handle(Request $request)
     {
-        // Slack URL verification
-        $payload = $request->json();
-
-        if ($payload->get('type') === 'url_verification') {
-            return $payload->get('challenge');
-        }
-
         $botman = app('botman');
 
         $botman->hears('crytocompare {limit}', function ($bot, $limit) {
@@ -32,7 +25,7 @@ class BotManController extends Controller
 
         // Fallback in case of wrong command
         $botman->fallback(function ($bot) {
-            $bot->reply("Sorry, I did not understand these commands. Try: 'crytocompare 5'");
+            $bot->reply("Sorry, I did not understand these commands. Try: `crytocompare 5`");
         });
 
         $botman->listen();
@@ -59,10 +52,10 @@ class BotManController extends Controller
         $response = $client->get('?limit=' . $limit);
         $results = json_decode($response->getBody()->getContents());
 
-        $data = "Here' s the comparison of the top $limit crytocurrencies: \n";
+        $data = "Here' s the comparison of the top $limit crytocurrencies: " . PHP_EOL;
 
         foreach ($results as $result) {
-            $data .= '> ' . $result->name . ' | ' . $result->symbol . ' | ' . '$' . $result->price_usd . ' | ' . '$' . $result->market_cap_usd . "\n";
+            $data .= '> ' . $result->name . ' | ' . $result->symbol . ' | ' . '$' . $result->price_usd . ' | ' . '$' . $result->market_cap_usd . PHP_EOL;
         }
 
         return $data;
